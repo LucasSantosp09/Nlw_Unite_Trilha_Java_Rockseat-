@@ -6,6 +6,7 @@ import codepause.com.br.passin.dto.events.EventDetailDTO;
 import codepause.com.br.passin.dto.events.EventIdDTO;
 import codepause.com.br.passin.dto.events.EventRequestDTO;
 import codepause.com.br.passin.dto.events.EventResponseDTO;
+import codepause.com.br.passin.dto.events.exceptions.EventNotFoundException;
 import codepause.com.br.passin.repositories.AttendeeRepository;
 import codepause.com.br.passin.repositories.EventRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class EventService {
     private final AttendeeRepository attendeeRepository;
 
     public EventResponseDTO getEvenetDetail(String eventId){
-        Event event = this.eventRepository.findById(eventId).orElseThrow( () -> new RuntimeException("Event not found with ID: " + eventId));
+        Event event = this.eventRepository.findById(eventId).orElseThrow( () -> new EventNotFoundException("Event not found with ID: " + eventId));
         List<Attendee> attendeeList = this.attendeeRepository.findByEventId(eventId);
         return new EventResponseDTO(event, attendeeList.size());
     }
