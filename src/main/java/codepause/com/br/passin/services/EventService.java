@@ -3,6 +3,7 @@ package codepause.com.br.passin.services;
 import codepause.com.br.passin.domain.attendee.Attendee;
 import codepause.com.br.passin.domain.event.Event;
 import codepause.com.br.passin.dto.events.EventDetailDTO;
+import codepause.com.br.passin.dto.events.EventIdDTO;
 import codepause.com.br.passin.dto.events.EventRequestDTO;
 import codepause.com.br.passin.dto.events.EventResponseDTO;
 import codepause.com.br.passin.repositories.AttendeeRepository;
@@ -28,13 +29,14 @@ public class EventService {
         return new EventResponseDTO(event, attendeeList.size());
     }
 
-    public void createEvent(EventRequestDTO eventDTO){
+    public EventIdDTO createEvent(EventRequestDTO eventDTO){
         Event newEvent = new Event();
         newEvent.setTitle(eventDTO.title());
         newEvent.setDetails(eventDTO.details());
         newEvent.setMaximumAttendeeds(eventDTO.maximumAttendees());
         newEvent.setSlug(this.createSlug(eventDTO.title()));
         this.eventRepository.save(newEvent);
+        return new EventIdDTO(newEvent.getId());
     }
 
     private String createSlug(String text){
