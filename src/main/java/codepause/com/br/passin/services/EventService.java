@@ -2,15 +2,12 @@ package codepause.com.br.passin.services;
 
 import codepause.com.br.passin.domain.attendee.Attendee;
 import codepause.com.br.passin.domain.event.Event;
-import codepause.com.br.passin.dto.events.EventDetailDTO;
 import codepause.com.br.passin.dto.events.EventIdDTO;
 import codepause.com.br.passin.dto.events.EventRequestDTO;
 import codepause.com.br.passin.dto.events.EventResponseDTO;
 import codepause.com.br.passin.dto.events.exceptions.EventNotFoundException;
-import codepause.com.br.passin.repositories.AttendeeRepository;
 import codepause.com.br.passin.repositories.EventRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
@@ -22,11 +19,11 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
-    private final AttendeeRepository attendeeRepository;
+    private final AttendeeService attendeeService;
 
     public EventResponseDTO getEvenetDetail(String eventId){
         Event event = this.eventRepository.findById(eventId).orElseThrow( () -> new EventNotFoundException("Event not found with ID: " + eventId));
-        List<Attendee> attendeeList = this.attendeeRepository.findByEventId(eventId);
+        List<Attendee> attendeeList = this.attendeeService.getAllAttendeesFromEvent(eventId);
         return new EventResponseDTO(event, attendeeList.size());
     }
 
