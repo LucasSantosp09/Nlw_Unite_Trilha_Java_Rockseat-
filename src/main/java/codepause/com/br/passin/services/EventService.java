@@ -2,6 +2,7 @@ package codepause.com.br.passin.services;
 
 import codepause.com.br.passin.domain.attendee.Attendee;
 import codepause.com.br.passin.domain.event.Event;
+import codepause.com.br.passin.domain.event.exceptions.EventFullException;
 import codepause.com.br.passin.dto.events.EventIdDTO;
 import codepause.com.br.passin.dto.events.EventRequestDTO;
 import codepause.com.br.passin.dto.events.EventResponseDTO;
@@ -35,6 +36,17 @@ public class EventService {
         newEvent.setSlug(this.createSlug(eventDTO.title()));
         this.eventRepository.save(newEvent);
         return new EventIdDTO(newEvent.getId());
+    }
+
+    public void registerAttendeeOnEvent(String eventId){
+        this.attendeeService.verifyAttedeeSubscription("", eventId);
+
+        Event event = this.eventRepository.findById(eventId).orElseThrow( () -> new EventNotFoundException("Event not found with ID: " + eventId));
+        List<Attendee> attendeeList = this.attendeeService.getAllAttendeesFromEvent(eventId);
+
+        if (event.getMaximumAttendeeds() <= attendeeList.size()) throw new EventFullException("Event is full"){
+
+        }
     }
 
     private String createSlug(String text){

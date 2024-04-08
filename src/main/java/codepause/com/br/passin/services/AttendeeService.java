@@ -1,6 +1,7 @@
 package codepause.com.br.passin.services;
 
 import codepause.com.br.passin.domain.attendee.Attendee;
+import codepause.com.br.passin.domain.attendee.exceptions.AttendeeAlreadyExistException;
 import codepause.com.br.passin.domain.checkin.CheckIn;
 import codepause.com.br.passin.dto.attendee.AttendeeDetails;
 import codepause.com.br.passin.dto.attendee.AttendeesListResponseDTO;
@@ -20,7 +21,7 @@ public class AttendeeService {
     private final AttendeeRepository attendeeRepository;
 
     private final CheckInRepository checkInRepository;
-    
+
     public List<Attendee> getAllAttendeesFromEvent(String eventId){
         return this.attendeeRepository.findByEventId(eventId);
     }
@@ -37,4 +38,13 @@ public class AttendeeService {
         return new AttendeesListResponseDTO(attendeeDetailsList);
     }
 
+    public Attendee registerAttendee(Attendee newAttendee) {
+        this.attendeeRepository.save(newAttendee);
+        return newAttendee;
+    }
+
+    public void verifyAttedeeSubscription(String email, String eventId) {
+       Optional<Attendee> isAttendeeRegistered = this.attendeeRepository.findByEventIdAndEmail(email, eventId);
+        if(isAttendeeRegistered.isPresent()) throw new AttendeeAlreadyExistException("Attendee iss already registered");
+    }
 }
